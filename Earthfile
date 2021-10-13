@@ -25,7 +25,7 @@ src:
     COPY test/ test/
     COPY third_party/ third_party/
     COPY vendor/ vendor/
-    COPY go.mod go.sum .generated_files .gitattributes .gitignore LICENSE code-of-conduct.md CONTRIBUTING.md OWNERS OWNERS_ALIASES README.md SECURITY_CONTACTS SUPPORT.md ./
+    COPY go.mod go.sum .generated_files .gitattributes .gitignore Earthfile LICENSE code-of-conduct.md CONTRIBUTING.md OWNERS OWNERS_ALIASES README.md SECURITY_CONTACTS SUPPORT.md ./
     RUN ln -s build/root/Makefile Makefile
     RUN ln -s build/root/Makefile.generated_files Makefile.generated_files
     RUN ln -s CHANGELOG/README.md CHANGELOG.md
