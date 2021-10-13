@@ -1,3 +1,5 @@
+VERSION --no-implicit-ignore 0.7
+
 # FROM k8s.gcr.io/build-image/kube-cross:v1.23.0-go1.17.1-bullseye.1
 FROM gcr.io/k8s-staging-test-infra/kubekins-e2e:v20211001-f2ebda117d-master
 WORKDIR /go/src/k8s.io/kubernetes
@@ -428,7 +430,7 @@ vet:
     RUN CALLED_FROM_MAIN_MAKEFILE=1 hack/make-rules/vet.sh $WHAT
 
 
-# TOOD: break update into multiple parallel build targets
+# TODO: break update into multiple parallel build targets
 # This might be tricky to do concurrently because some updates may conflict
 # and sequential ordering might be necessary.
 update:
