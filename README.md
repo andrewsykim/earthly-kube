@@ -1,6 +1,6 @@
 # Kubernetes built with Earthly
 
-<img src="https://github.com/kubernetes/kubernetes/raw/master/logo/logo.png" width="200"><a href="https://earthly.dev"><img src="logo-banner-white-bg.png" hspace="50px" alt="Earthly" width="300" /></a>
+<img src="https://github.com/kubernetes/kubernetes/raw/master/logo/logo.png" width="200"><a href="https://earthly.dev"><img src="logo/logo-banner-white-bg.png" hspace="50px" alt="Earthly" width="300" /></a>
 
 
 ----
