@@ -1,6 +1,5 @@
 VERSION --no-implicit-ignore 0.5
 
-# FROM k8s.gcr.io/build-image/kube-cross:v1.23.0-go1.17.1-bullseye.1
 FROM gcr.io/k8s-staging-test-infra/kubekins-e2e:v20211001-f2ebda117d-master
 WORKDIR /go/src/k8s.io/kubernetes
 ARG WHAT
@@ -26,8 +25,7 @@ src:
     COPY third_party/ third_party/
     COPY vendor/ vendor/
     COPY go.mod go.sum .generated_files .gitattributes .gitignore Earthfile LICENSE code-of-conduct.md CONTRIBUTING.md OWNERS OWNERS_ALIASES README.md SECURITY_CONTACTS SUPPORT.md ./
-    # because some scripts use git
-    COPY .git/ .git/
+    COPY .git/ .git/ #  COPY .git because some build scripts use git
     COPY .github/ .github/
     RUN ln -s build/root/Makefile Makefile
     RUN ln -s build/root/Makefile.generated_files Makefile.generated_files
