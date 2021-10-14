@@ -5,82 +5,48 @@
 
 ----
 
-Kubernetes, also known as K8s, is an open source system for managing [containerized applications]
-across multiple hosts. It provides basic mechanisms for deployment, maintenance,
-and scaling of applications.
+[Earthly](https://earthly.dev) is a very pragmatic iteration from the existing ecosystem of container build
+tools available today. It combines the best of Dockerfiles and Makefiles to provide a target-based containerized
+build system to provide consistently repeatable and reproducible builds. Earthly takes it a step further by understanding
+target dependencies and running targets in parallel when possible by leveraging the isolation characteristics of containers.
 
-Kubernetes builds upon a decade and a half of experience at Google running
-production workloads at scale using a system called [Borg],
-combined with best-of-breed ideas and practices from the community.
-
-Kubernetes is hosted by the Cloud Native Computing Foundation ([CNCF]).
-If your company wants to help shape the evolution of
-technologies that are container-packaged, dynamically scheduled,
-and microservices-oriented, consider joining the CNCF.
-For details about who's involved and how Kubernetes plays a role,
-read the CNCF [announcement].
+This project uses Earthly to build the Kubernetes project. See the [Earthfile](./Earthfile) to see how it can be adopted
+for any existing project that may already be using Docker or Make, even for large projects like Kubernetes.
 
 ----
 
-## To start using K8s
+## Example targets
 
-See our documentation on [kubernetes.io].
+Here are some examples of common targets to run.
 
-Try our [interactive tutorial].
-
-Take a free course on [Scalable Microservices with Kubernetes].
-
-To use Kubernetes code as a library in other applications, see the [list of published components](https://git.k8s.io/kubernetes/staging/README.md).
-Use of the `k8s.io/kubernetes` module or `k8s.io/kubernetes/...` packages as libraries is not supported.
-
-## To start developing K8s
-
-The [community repository] hosts all information about
-building Kubernetes from source, how to contribute code
-and documentation, who to contact about what, etc.
-
-If you want to build Kubernetes right away there are two options:
-
-##### You have a working [Go environment].
-
+Run all unit and integration tests:
 ```
-mkdir -p $GOPATH/src/k8s.io
-cd $GOPATH/src/k8s.io
-git clone https://github.com/kubernetes/kubernetes
-cd kubernetes
-make
+$ earthly +test-all
 ```
 
-##### You have a working [Docker environment].
-
+Run all verify checks:
 ```
-git clone https://github.com/kubernetes/kubernetes
-cd kubernetes
-make quick-release
+$ earthly -P +verify
 ```
 
-For the full story, head over to the [developer's documentation].
+Run all update scripts:
+```
+$ earthly +test
+```
 
-## Support
+Build components:
+```
+$ earthly +build
+```
 
-If you need support, start with the [troubleshooting guide],
-and work your way through the process that we've outlined.
+Build a specific component:
+```
+$ earthly --build-arg WHAT=kubelet +build
+```
 
-That said, if you have questions, reach out to us
-[one way or another][communication].
+Produce Kubernetes release artifacts:
+```
+$ earthly -P +release
+```
 
-[announcement]: https://cncf.io/news/announcement/2015/07/new-cloud-native-computing-foundation-drive-alignment-among-container
-[Borg]: https://research.google.com/pubs/pub43438.html
-[CNCF]: https://www.cncf.io/about
-[communication]: https://git.k8s.io/community/communication
-[community repository]: https://git.k8s.io/community
-[containerized applications]: https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/
-[developer's documentation]: https://git.k8s.io/community/contributors/devel#readme
-[Docker environment]: https://docs.docker.com/engine
-[Go environment]: https://golang.org/doc/install
-[GoPkg]: https://pkg.go.dev/k8s.io/kubernetes
-[GoPkg Widget]: https://pkg.go.dev/badge/k8s.io/kubernetes.svg
-[interactive tutorial]: https://kubernetes.io/docs/tutorials/kubernetes-basics
-[kubernetes.io]: https://kubernetes.io
-[Scalable Microservices with Kubernetes]: https://www.udacity.com/course/scalable-microservices-with-kubernetes--ud615
-[troubleshooting guide]: https://kubernetes.io/docs/tasks/debug-application-cluster/troubleshooting/
+## Build Time Improvements

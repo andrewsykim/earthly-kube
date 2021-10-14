@@ -1,4 +1,4 @@
-VERSION --no-implicit-ignore 0.7
+VERSION --no-implicit-ignore 0.5
 
 # FROM k8s.gcr.io/build-image/kube-cross:v1.23.0-go1.17.1-bullseye.1
 FROM gcr.io/k8s-staging-test-infra/kubekins-e2e:v20211001-f2ebda117d-master
