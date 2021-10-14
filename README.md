@@ -31,7 +31,7 @@ $ earthly -P +verify
 
 Run all update scripts:
 ```
-$ earthly +test
+$ earthly +update
 ```
 
 Build components:
