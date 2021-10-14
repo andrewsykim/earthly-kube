@@ -49,14 +49,7 @@ Produce Kubernetes release artifacts:
 $ earthly -P +release
 ```
 
-## Build Time Improvements
-
-TODO: need to measure how much faster builds are when parallelization is enabled.
-
-
 ## Caveats
 
-Some improvements to Earthly were required in order to use it to build the Kubernetes project:
-- Earthfile feature flag `--no-implicit-ignore` (https://github.com/earthly/earthly/pull/1297)
-
-Ensure you are using a version of Earthly with these changes.
+- Earthfile feature flag `--no-implicit-ignore` is required and was added in https://github.com/earthly/earthly/pull/1297.
+- Some targets that run in parallel use a lot of resources and may crash in systems without enough memory.
