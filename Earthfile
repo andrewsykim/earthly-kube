@@ -33,12 +33,6 @@ src:
     RUN ln -s CHANGELOG/README.md CHANGELOG.md
     RUN make generated_files
 
-    # TODO: copy individual directories to optimize for caching
-    # This is actually tricky to do right, because many build scripts rely on git
-    # and so we need to COPY .git/ at the very least, which is not much different
-    # from just copying everything since .git changes with every diff anyways.
-    # COPY . .
-
 
 build:
     FROM +src
@@ -105,13 +99,13 @@ verify:
     BUILD +verify-test-code
     BUILD +verify-test-featuregates
     BUILD +verify-test-images
-    # verify-typecheck-* is very memory intensive and often crashes in
-    # local environments without enough RAM
+    # verify-typecheck-* is very memory intensive and often crashes in local environments without enough RAM
     # BUILD +verify-typecheck-dockerless
     # BUILD +verify-typecheck-providerless
     # BUILD +verify-typecheck
     BUILD +verify-vendor-licences
     BUILD +verify-vendor
+
 
 # verify-legacy is the same as calling "make verify" where all verify checks
 # run sequentially. Use the +verify target to run all verify checks in parallel.
@@ -430,13 +424,78 @@ vet:
     RUN CALLED_FROM_MAIN_MAKEFILE=1 hack/make-rules/vet.sh $WHAT
 
 
-# TODO: break update into multiple parallel build targets
-# This might be tricky to do concurrently because some updates may conflict
-# and sequential ordering might be necessary.
+# Build targets are actually not run in parallel when using LOCALLY so this should be safe.
 update:
     LOCALLY
     RUN ./hack/install-etcd.sh
+    BUILD +update-generated-protobuf
+    BUILD +update-codegen
+    BUILD +update-generated-runtime
+    BUILD +update-generated-device-plugin
+    BUILD +update-generated-api-compatibility-data
+    BUILD +update-generated-docs
+    BUILD +update-generated-swagger-docs
+    BUILD +update-openapi-spec
+    BUILD +update-bazel
+    BUILD +update-gofmt
+
+
+# update-legacy is the same as running "make update" where each update
+# script is run sequentially. Use the +update target to run updates in parallel.
+update-legacy:
+    LOCALLY
+    RUN ./hack/install-etcd.sh
     RUN CALLED_FROM_MAIN_MAKEFILE=1 hack/make-rules/update.sh
+
+
+update-generated-protobuf:
+    LOCALLY
+    RUN ./hack/update-generated-protobuf.sh
+
+
+update-codegen:
+    LOCALLY
+    RUN ./hack/update-codegen.sh
+
+
+update-generated-runtime:
+    LOCALLY
+    RUN ./hack/update-generated-runtime.sh
+
+
+update-generated-device-plugin:
+    LOCALLY
+    RUN ./hack/update-generated-device-plugin.sh
+
+
+update-generated-api-compatibility-data:
+    LOCALLY
+    RUN ./hack/update-generated-api-compatibility-data.sh
+
+
+update-generated-docs:
+    LOCALLY
+    RUN ./hack/update-generated-docs.sh
+
+
+update-generated-swagger-docs:
+    LOCALLY
+    RUN ./hack/update-generated-swagger-docs.sh
+
+
+update-openapi-spec:
+    LOCALLY
+    RUN ./hack/update-openapi-spec.sh
+
+
+update-bazel:
+    LOCALLY
+    RUN ./hack/update-bazel.sh
+
+
+update-gofmt:
+    LOCALLY
+    RUN ./hack/update-gofmt.sh
 
 
 test-all:
