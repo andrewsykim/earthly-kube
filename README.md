@@ -51,6 +51,8 @@ $ earthly -P +release
 
 ## Build Time Improvements
 
+TODO: need to measure how much faster builds are when parallelization is enabled.
+
 
 ## Caveats
 
