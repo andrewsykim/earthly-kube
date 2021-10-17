@@ -30,7 +30,7 @@ src:
     RUN ln -s build/root/Makefile Makefile
     RUN ln -s build/root/Makefile.generated_files Makefile.generated_files
     RUN ln -s CHANGELOG/README.md CHANGELOG.md
-    RUN make generated_files
+    # RUN make generated_files
 
 
 build:
@@ -98,10 +98,9 @@ verify:
     BUILD +verify-test-code
     BUILD +verify-test-featuregates
     BUILD +verify-test-images
-    # verify-typecheck-* is very memory intensive and often crashes in local environments without enough RAM
-    # BUILD +verify-typecheck-dockerless
-    # BUILD +verify-typecheck-providerless
-    # BUILD +verify-typecheck
+    BUILD +verify-typecheck-dockerless
+    BUILD +verify-typecheck-providerless
+    BUILD +verify-typecheck
     BUILD +verify-vendor-licences
     BUILD +verify-vendor
 
