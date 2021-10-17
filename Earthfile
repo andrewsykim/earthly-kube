@@ -98,8 +98,6 @@ verify:
     BUILD +verify-test-code
     BUILD +verify-test-featuregates
     BUILD +verify-test-images
-    BUILD +verify-typecheck-dockerless
-    BUILD +verify-typecheck-providerless
     BUILD +verify-typecheck
     BUILD +verify-vendor-licences
     BUILD +verify-vendor
@@ -393,18 +391,10 @@ verify-test-images:
     RUN hack/verify-test-images.sh
 
 
-verify-typecheck-dockerless:
-    FROM +src
-    RUN hack/verify-typecheck-dockerless.sh
-
-
-verify-typecheck-providerless:
-    FROM +src
-    RUN hack/verify-typecheck-providerless.sh
-
-
 verify-typecheck:
     FROM +src
+    RUN hack/verify-typecheck-dockerless.sh
+    RUN hack/verify-typecheck-providerless.sh
     RUN hack/verify-typecheck.sh
 
 
