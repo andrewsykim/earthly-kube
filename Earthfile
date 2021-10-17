@@ -160,6 +160,7 @@ verify-cli-conventions:
 
 verify-codegen:
     FROM +src
+    RUN make generated_files
     RUN hack/verify-codegen.sh
 
 
