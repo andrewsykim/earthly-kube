@@ -39,6 +39,13 @@ build:
     SAVE ARTIFACT _output AS LOCAL _output
 
 
+kube-build-image:
+    FROM +src
+    WITH DOCKER
+       RUN ./build/make-build-image.sh
+    END
+
+
 ginkgo:
     FROM +src
     RUN hack/make-rules/build.sh vendor/github.com/onsi/ginkgo/ginkgo
@@ -193,7 +200,7 @@ verify-flags-underscore:
 
 
 verify-generated-device-plugin:
-    FROM +src
+    FROM +kube-build-image
     WITH DOCKER
         RUN hack/verify-generated-device-plugin.sh
     END
@@ -215,35 +222,35 @@ verify-generated-files:
 
 
 verify-generated-kms:
-    FROM +src
+    FROM +kube-build-image
     WITH DOCKER
         RUN hack/verify-generated-kms.sh
     END
 
 
 verify-generated-kubelet-plugin-registration:
-    FROM +src
+    FROM +kube-build-image
     WITH DOCKER
         RUN hack/verify-generated-kubelet-plugin-registration.sh
     END
 
 
 verify-generated-pod-resources:
-    FROM +src
+    FROM +kube-build-image
     WITH DOCKER
         RUN hack/verify-generated-pod-resources.sh
     END
 
 
 verify-generated-protobuf:
-    FROM +src
+    FROM +kube-build-image
     WITH DOCKER
         RUN hack/verify-generated-protobuf.sh
     END
 
 
 verify-generated-runtime:
-    FROM +src
+    FROM +kube-build-image
     WITH DOCKER
         RUN hack/verify-generated-runtime.sh
     END
@@ -350,7 +357,7 @@ verify-readonly-packages:
 
 
 verify-shellcheck:
-    FROM +src
+    FROM +kube-build-image
     WITH DOCKER
         RUN hack/verify-shellcheck.sh
     END
