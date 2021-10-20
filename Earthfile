@@ -14,6 +14,11 @@ src:
     RUN cd /tmp && curl -LO https://github.com/koalaman/shellcheck/releases/download/v0.7.1/shellcheck-v0.7.1.linux.x86_64.tar.xz && \
         tar -xf shellcheck-v0.7.1.linux.x86_64.tar.xz && \
 	cp /tmp/shellcheck-v0.7.1/shellcheck /usr/local/bin
+    RUN mkdir /tmp/protoc && cd /tmp/protoc && \
+        curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v3.18.1/protoc-3.18.1-linux-x86_64.zip && \
+        unzip protoc-3.18.1-linux-x86_64.zip && \
+	cp /tmp/protoc/bin/protoc /usr/local/bin && \
+	cp -r /tmp/protoc/include /usr/local/
     COPY api/ api/
     COPY build/ build/
     COPY CHANGELOG/ CHANGELOG/
