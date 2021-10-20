@@ -1,6 +1,7 @@
 VERSION --no-implicit-ignore 0.5
 
 FROM gcr.io/k8s-staging-test-infra/kubekins-e2e:v20211001-f2ebda117d-master
+# FROM k8s.gcr.io/build-image/kube-cross:v1.23.0-go1.17.1-bullseye.1
 WORKDIR /go/src/k8s.io/kubernetes
 ARG WHAT
 ARG TESTS
@@ -9,6 +10,10 @@ ENV PATH=/go/src/k8s.io/kubernetes/third_party/etcd:${PATH}
 
 
 src:
+    # install any additional tools that can be cached once.
+    RUN cd /tmp && curl -LO https://github.com/koalaman/shellcheck/releases/download/v0.7.1/shellcheck-v0.7.1.linux.x86_64.tar.xz && \
+        tar -xf shellcheck-v0.7.1.linux.x86_64.tar.xz && \
+	cp /tmp/shellcheck-v0.7.1/shellcheck /usr/local/bin
     COPY api/ api/
     COPY build/ build/
     COPY CHANGELOG/ CHANGELOG/
@@ -37,14 +42,6 @@ build:
     FROM +src
     RUN hack/make-rules/build.sh $WHAT
     SAVE ARTIFACT _output AS LOCAL _output
-
-
-kube-build-image:
-    FROM +src
-    WITH DOCKER
-       RUN ./build/make-build-image.sh
-    END
-
 
 ginkgo:
     FROM +src
@@ -200,10 +197,8 @@ verify-flags-underscore:
 
 
 verify-generated-device-plugin:
-    FROM +kube-build-image
-    WITH DOCKER
-        RUN hack/verify-generated-device-plugin.sh
-    END
+    FROM +src
+    RUN hack/verify-generated-device-plugin.sh
 
 
 verify-generated-docs:
@@ -222,38 +217,28 @@ verify-generated-files:
 
 
 verify-generated-kms:
-    FROM +kube-build-image
-    WITH DOCKER
-        RUN hack/verify-generated-kms.sh
-    END
+    FROM +src
+    RUN hack/verify-generated-kms.sh
 
 
 verify-generated-kubelet-plugin-registration:
-    FROM +kube-build-image
-    WITH DOCKER
-        RUN hack/verify-generated-kubelet-plugin-registration.sh
-    END
+    FROM +src
+    RUN hack/verify-generated-kubelet-plugin-registration.sh
 
 
 verify-generated-pod-resources:
-    FROM +kube-build-image
-    WITH DOCKER
-        RUN hack/verify-generated-pod-resources.sh
-    END
+    FROM +src
+    RUN hack/verify-generated-pod-resources.sh
 
 
 verify-generated-protobuf:
-    FROM +kube-build-image
-    WITH DOCKER
-        RUN hack/verify-generated-protobuf.sh
-    END
+    FROM +src
+    RUN hack/verify-generated-protobuf.sh
 
 
 verify-generated-runtime:
-    FROM +kube-build-image
-    WITH DOCKER
-        RUN hack/verify-generated-runtime.sh
-    END
+    FROM +src
+    RUN hack/verify-generated-runtime.sh
 
 
 verify-generated-stable-metrics:
@@ -357,10 +342,8 @@ verify-readonly-packages:
 
 
 verify-shellcheck:
-    FROM +kube-build-image
-    WITH DOCKER
-        RUN hack/verify-shellcheck.sh
-    END
+    FROM +src
+    RUN hack/verify-shellcheck.sh
 
 
 verify-spelling:
