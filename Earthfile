@@ -9,8 +9,8 @@ ARG BRANCH
 ENV PATH=/go/src/k8s.io/kubernetes/third_party/etcd:${PATH}
 
 
-src:
-    # install any additional tools that can be cached once.
+# install any additional tools not included in base image and can be cached
+tools:
     RUN cd /tmp && curl -LO https://github.com/koalaman/shellcheck/releases/download/v0.7.1/shellcheck-v0.7.1.linux.x86_64.tar.xz && \
         tar -xf shellcheck-v0.7.1.linux.x86_64.tar.xz && \
 	cp /tmp/shellcheck-v0.7.1/shellcheck /usr/local/bin
@@ -19,6 +19,11 @@ src:
         unzip protoc-3.18.1-linux-x86_64.zip && \
 	cp /tmp/protoc/bin/protoc /usr/local/bin && \
 	cp -r /tmp/protoc/include /usr/local/
+    RUN go get golang.org/x/tools/cmd/goimports
+
+
+src:
+    FROM +tools
     COPY api/ api/
     COPY build/ build/
     COPY CHANGELOG/ CHANGELOG/

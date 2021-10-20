@@ -15,7 +15,7 @@
 # limitations under the License.
 
 # This script genertates `*/api.pb.go` from the protobuf file `*/api.proto`.
-# Usage: 
+# Usage:
 #     hack/update-generated-protobuf-dockerized.sh "${APIROOTS}"
 #     An example APIROOT is: "k8s.io/api/admissionregistration/v1"
 
@@ -25,6 +25,12 @@ set -o pipefail
 
 KUBE_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 source "${KUBE_ROOT}/hack/lib/init.sh"
+
+APIROOTS_IN=${APIROOTS:-$(git grep --files-with-matches -e '// +k8s:protobuf-gen=package' cmd pkg staging | \
+	xargs -n 1 dirname | \
+	sed 's,^,k8s.io/kubernetes/,;s,k8s.io/kubernetes/staging/src/,,' | \
+	sort | uniq
+)}
 
 kube::golang::setup_env
 
@@ -45,7 +51,7 @@ gotoprotobuf=$(kube::util::find-binary "go-to-protobuf")
 
 while IFS=$'\n' read -r line; do
   APIROOTS+=( "$line" );
-done <<< "${1}"
+done <<< "${APIROOTS_IN}"
 shift
 
 # requires the 'proto' tag to build (will remove when ready)
