@@ -14,25 +14,48 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script generates all go files from the corresponding protobuf files.
-# Usage: `hack/update-generated-protobuf.sh`.
+# This script genertates `*/api.pb.go` from the protobuf file `*/api.proto`.
+# Usage: 
+#     hack/update-generated-protobuf-dockerized.sh "${APIROOTS}"
+#     An example APIROOT is: "k8s.io/api/admissionregistration/v1"
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
 KUBE_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
+source "${KUBE_ROOT}/hack/lib/init.sh"
 
-# NOTE: All output from this script needs to be copied back to the calling
-# source tree.  This is managed in kube::build::copy_output in build/common.sh.
-# If the output set is changed update that function.
+kube::golang::setup_env
 
-APIROOTS=${APIROOTS:-$(git grep --files-with-matches -e '// +k8s:protobuf-gen=package' cmd pkg staging | \
-	xargs -n 1 dirname | \
-	sed 's,^,k8s.io/kubernetes/,;s,k8s.io/kubernetes/staging/src/,,' | \
-	sort | uniq
-)}
+go install k8s.io/kubernetes/vendor/k8s.io/code-generator/cmd/go-to-protobuf
+go install k8s.io/kubernetes/vendor/k8s.io/code-generator/cmd/go-to-protobuf/protoc-gen-gogo
 
-"${KUBE_ROOT}/build/run.sh" hack/update-generated-protobuf-dockerized.sh "${APIROOTS}" "$@"
+if [[ -z "$(which protoc)" || "$(protoc --version)" != "libprotoc 3."* ]]; then
+  echo "Generating protobuf requires protoc 3.0.0-beta1 or newer. Please download and"
+  echo "install the platform appropriate Protobuf package for your OS: "
+  echo
+  echo "  https://github.com/protocolbuffers/protobuf/releases"
+  echo
+  echo "WARNING: Protobuf changes are not being validated"
+  exit 1
+fi
 
-# ex: ts=2 sw=2 et filetype=sh
+gotoprotobuf=$(kube::util::find-binary "go-to-protobuf")
+
+while IFS=$'\n' read -r line; do
+  APIROOTS+=( "$line" );
+done <<< "${1}"
+shift
+
+# requires the 'proto' tag to build (will remove when ready)
+# searches for the protoc-gen-gogo extension in the output directory
+# satisfies import of github.com/gogo/protobuf/gogoproto/gogo.proto and the
+# core Google protobuf types
+PATH="${KUBE_ROOT}/_output/bin:${PATH}" \
+  "${gotoprotobuf}" \
+  --proto-import="${KUBE_ROOT}/vendor" \
+  --proto-import="${KUBE_ROOT}/third_party/protobuf" \
+  --packages="$(IFS=, ; echo "${APIROOTS[*]}")" \
+  --go-header-file "${KUBE_ROOT}/hack/boilerplate/boilerplate.generatego.txt" \
+  "$@"

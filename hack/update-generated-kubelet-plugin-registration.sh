@@ -14,14 +14,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# This script generates `*/api.pb.go` from the protobuf file `*/api.proto`.
+# Example:
+#   kube::protoc::generate_proto "${KUBELET_PLUGIN_REGISTRATION_V1ALPHA}"
+
 set -o errexit
 set -o nounset
 set -o pipefail
 
-KUBE_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
+KUBE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../" && pwd -P)"
+KUBELET_PLUGIN_REGISTRATION_V1ALPHA="${KUBE_ROOT}/staging/src/k8s.io/kubelet/pkg/apis/pluginregistration/v1alpha1/"
+KUBELET_PLUGIN_REGISTRATION_V1BETA="${KUBE_ROOT}/staging/src/k8s.io/kubelet/pkg/apis/pluginregistration/v1beta1/"
+KUBELET_EXAMPLE_PLUGIN_V1BETA1="${KUBE_ROOT}/pkg/kubelet/pluginmanager/pluginwatcher/example_plugin_apis/v1beta1/"
+KUBELET_EXAMPLE_PLUGIN_V1BETA2="${KUBE_ROOT}/pkg/kubelet/pluginmanager/pluginwatcher/example_plugin_apis/v1beta2/"
 
-# NOTE: All output from this script needs to be copied back to the calling
-# source tree.  This is managed in kube::build::copy_output in build/common.sh.
-# If the output set is changed update that function.
-
-"${KUBE_ROOT}/build/run.sh" hack/update-generated-kubelet-plugin-registration-dockerized.sh "$@"
+source "${KUBE_ROOT}/hack/lib/protoc.sh"
+kube::protoc::generate_proto "${KUBELET_PLUGIN_REGISTRATION_V1ALPHA}"
+kube::protoc::generate_proto "${KUBELET_PLUGIN_REGISTRATION_V1BETA}"
+kube::protoc::generate_proto "${KUBELET_EXAMPLE_PLUGIN_V1BETA1}"
+kube::protoc::generate_proto "${KUBELET_EXAMPLE_PLUGIN_V1BETA2}"

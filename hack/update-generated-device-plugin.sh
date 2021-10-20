@@ -14,14 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# This script generates `*/api.pb.go` from the protobuf file `*/api.proto`.
+# Example:
+#   kube::protoc::generate_proto "${DEVICE_PLUGIN_ALPHA}"
+
 set -o errexit
 set -o nounset
 set -o pipefail
 
-KUBE_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
+KUBE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../" && pwd -P)"
+DEVICE_PLUGIN_ALPHA="${KUBE_ROOT}/staging/src/k8s.io/kubelet/pkg/apis/deviceplugin/v1alpha/"
+DEVICE_PLUGIN_V1BETA1="${KUBE_ROOT}/staging/src/k8s.io/kubelet/pkg/apis/deviceplugin/v1beta1/"
 
-# NOTE: All output from this script needs to be copied back to the calling
-# source tree.  This is managed in kube::build::copy_output in build/common.sh.
-# If the output set is changed update that function.
-
-"${KUBE_ROOT}/build/run.sh" hack/update-generated-device-plugin-dockerized.sh "$@"
+source "${KUBE_ROOT}/hack/lib/protoc.sh"
+kube::protoc::generate_proto "${DEVICE_PLUGIN_ALPHA}"
+kube::protoc::generate_proto "${DEVICE_PLUGIN_V1BETA1}"
