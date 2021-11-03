@@ -1,4 +1,4 @@
-VERSION --no-implicit-ignore 0.5
+VERSION 0.6
 
 FROM gcr.io/k8s-staging-test-infra/kubekins-e2e:v20211001-f2ebda117d-master
 WORKDIR /go/src/k8s.io/kubernetes
